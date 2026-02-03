@@ -15,7 +15,7 @@ resource "aws_launch_configuration" "web_launch_config" {
   instance_type = "t3.micro"
   key_name      = "three-tier-architecture"
 
-  security_groups = [aws_security_group.web_sg.id]
+  security_groups = [var.web_sg]
 
   user_data = <<-EOF
               #!/bin/bash
@@ -31,8 +31,7 @@ resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id  = aws_vpc.three_tier_vpc.id
-
+  vpc_id  = var.aws_vpc
   health_check {
     path = "/"
   }
@@ -45,8 +44,8 @@ resource "aws_autoscaling_group" "web_asg" {
   desired_capacity = 3
 
   vpc_zone_identifier = [
-    aws_subnet.public1.id,
-    aws_subnet.public2.id
+    var.public_subnet1_id,
+    var.public_subnet2_id
   ]
 
   target_group_arns = [aws_lb_target_group.web_tg.arn]
@@ -62,11 +61,11 @@ resource "aws_lb" "external_lb" {
   internal           = false
   load_balancer_type = "application"
 
-  security_groups = [aws_security_group.lb_sg.id]
+  security_groups = [var.web_sg]
 
   subnets = [
-    aws_subnet.public1.id,
-    aws_subnet.public2.id
+    var.public_subnet1_id,
+    var.public_subnet2_id
   ]
 }
 
@@ -79,17 +78,4 @@ resource "aws_lb_listener" "public_listener" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.web_tg.arn
   }
-}
-
-
-resource "aws_lb_listener" "public_listener" {
-  load_balancer_arn = aws_lb.external_lb.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.web_tg.arn
-  }
-  
 }
