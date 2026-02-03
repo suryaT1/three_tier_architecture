@@ -20,13 +20,4 @@ module "aws_db_instance" {
   db_subnet_ids = module.aws_vpc.aws_subnet_db
 }
 
-data "aws_ami" "amazon_linux2" {
-  most_recent = true
 
-  owners = ["amazon"]
-
-  filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
-  }
-}
