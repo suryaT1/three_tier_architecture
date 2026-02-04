@@ -9,23 +9,28 @@ data "aws_ami" "amazon_linux2" {
   }
 }
 
-resource "aws_launch_configuration" "web_launch_config" {
-  name_prefix   = "web-launch-config-"
+resource "aws_launch_template" "web_lt" {
+  name_prefix   = "web-lt-"
   image_id      = data.aws_ami.amazon_linux2.id
-  instance_type = "t3.micro"
-  key_name      = "three-tier-architecture"
+  instance_type = "t2.micro"
 
-  security_groups = [var.web_sg]
+  key_name = var.key_name
 
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "Hello from ASG" > /var/www/html/index.html
-              EOF
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups = [var.web_sg]
+  }
+
+  user_data = base64encode(file("${path.module}/userdata.sh"))
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "web-instance"
+    }
+  }
 }
+
 
 resource "aws_lb_target_group" "web_tg" {
   name     = "web-tg"
@@ -36,26 +41,32 @@ resource "aws_lb_target_group" "web_tg" {
     path = "/"
   }
 }
+
 resource "aws_autoscaling_group" "web_asg" {
-  launch_configuration = aws_launch_configuration.web_launch_config.name
 
-  min_size         = 2
-  max_size         = 5
-  desired_capacity = 3
+  desired_capacity = 2
+  max_size         = 3
+  min_size         = 1
 
-  vpc_zone_identifier = [
+    vpc_zone_identifier = [
     var.public_subnet1_id,
     var.public_subnet2_id
   ]
+
+  launch_template {
+    id      = aws_launch_template.web_lt.id
+    version = "$Latest"
+  }
 
   target_group_arns = [aws_lb_target_group.web_tg.arn]
 
   tag {
     key                 = "Name"
-    value               = "web-server"
+    value               = "web-asg"
     propagate_at_launch = true
   }
 }
+
 resource "aws_lb" "external_lb" {
   name               = "external-lb"
   internal           = false

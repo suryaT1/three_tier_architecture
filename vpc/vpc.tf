@@ -18,7 +18,7 @@ resource "aws_internet_gateway" "vpc_gateway" {
 resource "aws_subnet" "public_subnets" {
     vpc_id            = aws_vpc.three_tier_vpc.id
     cidr_block        = var.public_sb[count.index]
-    availability_zone = "us-east-1a"
+    availability_zone = var.azs[count.index]
         tags = {
             Name = "public-subnet-${count.index}"
         }
@@ -29,7 +29,7 @@ resource "aws_subnet" "public_subnets" {
 resource "aws_subnet" "private_subnets" {
     vpc_id            = aws_vpc.three_tier_vpc.id
     cidr_block        = var.private_sb[count.index]
-    availability_zone = "us-east-1b"
+    availability_zone = var.azs[count.index]
         tags = {
             Name = "private-subnet-${count.index}"
         }

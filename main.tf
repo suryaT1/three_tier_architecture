@@ -26,5 +26,6 @@ module "aws_lb"{
   web_sg  = module.aws_security_group.public_sg_id
   public_subnet1_id = module.aws_vpc.public_subnet_ids[0]
   public_subnet2_id = module.aws_vpc.public_subnet_ids[1]
+  key_name = var.key_name
 }
 
