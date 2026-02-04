@@ -1,9 +1,10 @@
 name: test runner
+
 on:
-  workflow_dispatch
-  
+  workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Running tests on 
+      - run: echo "Running tests"
