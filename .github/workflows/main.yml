@@ -1,4 +1,14 @@
----
-- name: test runner
-  on:
-     workflow_dispatch
+name: test runner
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment to run tests against"
+        required: true
+        default: "staging"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Running tests on ${{ inputs.environment }}"
