@@ -42,6 +42,15 @@ resource "aws_security_group_rule" "ext_to_public" {
   source_security_group_id = aws_security_group.public_sg.id
   security_group_id        = aws_security_group.ext_sg.id
 }
+resource "aws_security_group_rule" "ext_to_public2" {
+  type                     = "egress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  cidr_blocks = [ "0.0.0.0/0" ]
+  security_group_id        = aws_security_group.ext_sg.id
+}
+
 
 resource "aws_security_group_rule" "public_from_ext" {
   type                     = "ingress"

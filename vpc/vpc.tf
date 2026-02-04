@@ -46,3 +46,19 @@ resource "aws_subnet" "db_subnets" {
         }
     count = length(var.db_sb)
 }
+
+# NAT Gateway
+resource "aws_eip" "nat_eip" {
+    tags = {
+        Name = "three-tier-nat-eip"
+    }
+}
+
+resource "aws_nat_gateway" "threetier_nat" {
+    allocation_id = aws_eip.nat_eip.id
+    subnet_id     = aws_subnet.public_subnets[0].id
+        tags = {
+            Name = "three-tier-nat-gateway"
+        }
+  
+}
