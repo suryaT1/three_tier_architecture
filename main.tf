@@ -278,6 +278,9 @@ resource "aws_launch_template" "web-servers" {
     security_groups             = [aws_security_group.public-sg.id]
     associate_public_ip_address = true
   }
+  tags = {
+    Name = "web"
+  } 
 
   key_name = var.key_name
 
@@ -290,6 +293,14 @@ resource "aws_launch_template" "web-servers" {
                 echo "Hello from Web Server" > /var/www/html/index.html
                 EOF
   )
+    tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "web"
+    }
+  }
+
 
 }
 
@@ -305,6 +316,12 @@ resource "aws_autoscaling_group" "web_asg" {
     id      = aws_launch_template.web-servers.id
     version = "$Latest"
   }
+  tag {
+  key                 = "Name"
+  value               = "web"
+  propagate_at_launch = true
+}
+
 
   target_group_arns = [
     aws_lb_target_group.external-tg.arn
@@ -384,7 +401,9 @@ resource "aws_launch_template" "app-servers" {
   network_interfaces {
     security_groups             = [aws_security_group.private-sg.id]
   }
-
+    tags = {
+    Name = "app"
+  } 
   key_name = var.key_name
 
     user_data = base64encode(<<-EOF
@@ -392,6 +411,8 @@ resource "aws_launch_template" "app-servers" {
     yum update -y
     yum install -y python3
     sudo dnf install -y python3-pip
+    
+    # sudo dnf install -y mariadb105-server
 
     # Install Flask
     pip3 install flask
@@ -416,6 +437,14 @@ resource "aws_launch_template" "app-servers" {
     nohup python3 /opt/app/app.py > /opt/app/app.log 2>&1 &
     EOF
     )
+      tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name = "app"
+    }
+  }
+
 
 }
 
@@ -431,6 +460,12 @@ resource "aws_autoscaling_group" "app_asg" {
     id      = aws_launch_template.app-servers.id
     version = "$Latest"
   }
+  tag {
+    key                 = "Name"
+    value               = "app"
+    propagate_at_launch = true
+  }
+
 
   target_group_arns = [
     aws_lb_target_group.internal-tg.arn
