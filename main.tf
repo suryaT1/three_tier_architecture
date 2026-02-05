@@ -391,6 +391,7 @@ resource "aws_launch_template" "app-servers" {
     #!/bin/bash
     yum update -y
     yum install -y python3
+    sudo dnf install -y python3-pip
 
     # Install Flask
     pip3 install flask
