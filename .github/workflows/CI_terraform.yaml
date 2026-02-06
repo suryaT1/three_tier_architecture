@@ -43,4 +43,24 @@ jobs:
 
         - name: display terraform version
           run: terraform --version
+          
+  Creating_infra:
+       runs-on: ubuntu-latest
+       needs: Setting-up-Platform
+
+       steps:
+          - name: Terraform init
+            run: terraform init
+            working-directory: .
+
+          - name: Terraform fmt
+            run: terraform fmt
+
+          - name: checkov configure
+            run: checkov -d .
+
+          - name: terraform plan
+            run: terraform plan
+          
+    
 
