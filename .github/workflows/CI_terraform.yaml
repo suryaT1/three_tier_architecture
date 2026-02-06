@@ -30,7 +30,7 @@ jobs:
 
       steps:
         - name: checkout the working repository
-          uses: actions/checkout@v
+          uses: actions/checkout@v4
 
         - name: Installing packages
           run: pip install checkov
