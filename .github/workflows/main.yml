@@ -1,0 +1,24 @@
+name: CI Pipeline for three-tier architecture
+
+on:
+  workflow_dispatch:
+
+jobs:
+  AWS-configuration:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the repository
+        uses: actions/checkout@v4
+
+      - name: list out all the files
+        run: ls -la
+
+      - name: configure AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          
+      - name: AWS configuration completed
+        run: echo "AWS configuration completed successfully"
+
