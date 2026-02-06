@@ -48,6 +48,7 @@ jobs:
   Creating_infra:
        runs-on: ubuntu-latest
        needs: Setting-up-Platform
+       environment: SECRET_KEY
 
        steps:
        
