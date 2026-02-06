@@ -39,6 +39,9 @@ jobs:
         - name: display the version of checkov
           run: pip show checkov --version
 
+        - name: checkov configure
+          run: checkov -d .
+
         - name: importing terraform
           uses: hashicorp/setup-terraform@v1
 
@@ -71,9 +74,6 @@ jobs:
 
           - name: Terraform fmt
             run: terraform fmt
-
-          - name: checkov configure
-            run: checkov -d .
 
           - name: terraform plan
             run: terraform plan
