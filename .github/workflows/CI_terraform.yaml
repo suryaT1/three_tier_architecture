@@ -2,7 +2,8 @@ name: CI Pipeline for three-tier architecture
 
 on:
   push:
-    branches: version1
+    branches: 
+      - version1
   workflow_dispatch:
 
 jobs:
@@ -49,6 +50,13 @@ jobs:
        needs: Setting-up-Platform
 
        steps:
+
+          - name: checkout the working repository
+            uses: actions/checkout@v4
+
+          - name: importing terraform
+            uses: hashicorp/setup-terraform@v1
+          
           - name: Terraform init
             run: terraform init
             working-directory: .
