@@ -22,7 +22,7 @@ variable "aws_subnet_pub" {
   default = ""
 }
 variable "ec2_instance_profile_name" {
-  default = ""
+  default = " "
 }
 variable "key_name" {
   default = "three-tier-architecture"
