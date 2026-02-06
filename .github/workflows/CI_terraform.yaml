@@ -1,6 +1,8 @@
 name: CI Pipeline for three-tier architecture
 
 on:
+  push:
+    branches: version1
   workflow_dispatch:
 
 jobs:
