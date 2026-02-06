@@ -4,18 +4,15 @@ permissions:
   contents: read
 
 on:
-  push:
-    branches: 
-      - version1
   workflow_dispatch:
     inputs:
       target_env:
-        description: "Choose environment"
+        description: "Select environment"
         required: true
         type: choice
         options:
           - dev
-          - Production
+          - prod
 
 jobs:
   AWS-configuration:
