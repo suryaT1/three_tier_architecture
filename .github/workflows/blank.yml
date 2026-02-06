@@ -1,0 +1,23 @@
+name: first cicd workflow
+
+on:
+  [push, workflow_dispatch]
+
+jobs:
+  aws-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out repository
+        uses: actions/checkout@v4
+
+      - name: List out the files
+        run: ls -la
+
+      - name: Configure AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+
+      - name: AWS configuration completed
+        run: echo "AWS configuration completed successfully"
