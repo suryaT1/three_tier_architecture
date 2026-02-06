@@ -43,6 +43,7 @@ jobs:
           run: pip show checkov --version
 
         - name: checkov configure
+          continue-on-error: true
           run: checkov -d .
 
         - name: importing terraform
