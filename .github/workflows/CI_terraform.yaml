@@ -1,5 +1,8 @@
 name: CI Pipeline for three-tier architecture
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: 
@@ -78,5 +81,3 @@ jobs:
           - name: terraform plan
             run: terraform plan
           
-    
-
