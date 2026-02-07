@@ -1,0 +1,86 @@
+name: CI Pipeline for three-tier architecture
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: 
+       - version1
+
+jobs:
+  AWS-configuration:
+    runs-on: ubuntu-latest
+    environment: SECRET_KEY
+    steps:
+      - name: checkout the repository
+        uses: actions/checkout@v4
+
+      - name: list out all the files
+        run: ls -la
+
+      - name: configure AWS Credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.ACCESS_KEY }}" >> $GITHUB_ENV
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.SECRET_KEY }}" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          
+      - name: AWS configuration completed
+        run: echo "AWS configuration completed successfully"
+
+  Setting-up-Platform:
+      runs-on: ubuntu-latest
+      needs: AWS-configuration
+
+      steps:
+        - name: checkout the working repository
+          uses: actions/checkout@v4
+
+        - name: Installing packages
+          run: pip install checkov
+
+        - name: display the version of checkov
+          run: pip show checkov --version
+
+        - name: checkov configure
+          continue-on-error: true
+          run: checkov -d .
+
+        - name: importing terraform
+          uses: hashicorp/setup-terraform@v1
+
+        - name: display terraform version
+          run: terraform --version
+          
+  Creating_infra:
+       runs-on: ubuntu-latest
+       needs: Setting-up-Platform
+       environment: SECRET_KEY
+
+       steps:
+       
+          - name: Configure AWS Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+              aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+              aws-region: us-east-1
+              
+          - name: checkout the working repository
+            uses: actions/checkout@v4
+
+          - name: importing terraform
+            uses: hashicorp/setup-terraform@v1
+          
+          - name: Terraform init
+            run: terraform init
+            working-directory: .
+
+          - name: Terraform fmt
+            run: terraform fmt
+
+          - name: terraform plan
+            run: terraform plan
+
+          - name: terraform apply
+            run: terraform apply -auto-approve
